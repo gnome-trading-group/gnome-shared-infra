@@ -15,6 +15,10 @@ export class SlackBot extends Construct {
     const role = new iam.Role(this, 'ChatBotRole', {
       assumedBy: new iam.ServicePrincipal('chatbot.amazonaws.com'),
       description: 'Role for AWS ChatBot',
+      managedPolicies: [
+        iam.ManagedPolicy.fromAwsManagedPolicyName('CloudWatchReadOnlyAccess'),
+        iam.ManagedPolicy.fromAwsManagedPolicyName('AWSCodePipeline_FullAccess'),
+      ]
     });
 
     new chatbot.SlackChannelConfiguration(this, 'SlackChannelConfiguration', {
