@@ -4,4 +4,5 @@ export const PIPELINES: [string, GnomeAccount][] = [
   ["OrchestratorPipeline", GnomeAccount.InfraPipelines],
   ["RegistryPipeline", GnomeAccount.InfraPipelines],
   ["ControllerPipeline", GnomeAccount.InfraPipelines],
+  ["WebsitePipeline", GnomeAccount.InfraPipelines],
 ];
