@@ -34,5 +34,9 @@ export class SlackStack extends cdk.Stack {
       notificationTopics: [this.slackSnsTopic],
       role,
     });
+
+    new cdk.CfnOutput(this, 'SlackSnsTopicArn', {
+      value: this.slackSnsTopic.topicArn,
+    });
   }
 }
