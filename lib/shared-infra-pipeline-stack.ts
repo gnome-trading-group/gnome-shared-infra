@@ -45,7 +45,7 @@ export class SharedInfraPipelineStack extends cdk.Stack {
       }),
     });
 
-    const pipelineStage = new AppStage(this, "PipelinesStage", CONFIGS[Stage.PIPELINES]!);
+    const pipelineStage = new AppStage(this, "Pipelines", CONFIGS[Stage.PIPELINES]!);
     const dev = new AppStage(this, "Dev", CONFIGS[Stage.DEV]!);
     // const staging = new AppStage(this, "Staging", CONFIGS[Stage.STAGING]!);
     const prod = new AppStage(this, "Prod", CONFIGS[Stage.PROD]!);
