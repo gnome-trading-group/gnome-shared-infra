@@ -30,6 +30,7 @@ export const CONFIGS: { [stage in Stage]?:  SharedInfraConfig } = {
       "ControllerPipeline",
       "WebsitePipeline",
       "SharedInfraPipeline",
+      "MarketDataPipeline",
     ],
   },
   [Stage.DEV]: {
