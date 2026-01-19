@@ -37,6 +37,7 @@ export class SlackStack extends cdk.Stack {
 
     new cdk.CfnOutput(this, 'SlackSnsTopicArn', {
       value: this.slackSnsTopic.topicArn,
+      exportName: 'SlackSnsTopicArn',
     });
   }
 }
