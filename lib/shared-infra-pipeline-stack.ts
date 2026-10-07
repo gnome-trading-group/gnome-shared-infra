@@ -5,6 +5,7 @@ import { Construct } from "constructs";
 import { Stage } from "@gnome-trading-group/gnome-shared-cdk";
 import { CONFIGS, GITHUB_BRANCH, GITHUB_REPO, SharedInfraConfig } from "./config";
 import { MonitoringStack } from "./stacks/monitoring-stack";
+import { SystemHealthAccessStack } from "./stacks/system-health-access-stack";
 import { SlackStack } from "./stacks/slack-stack";
 
 
@@ -20,6 +21,12 @@ class AppStage extends cdk.Stage {
       config,
       slackSnsTopic: slackStack.slackSnsTopic,
     });
+    if (config.systemHealthReaders) {
+      new SystemHealthAccessStack(this, "SharedInfraSystemHealthAccessStack", {
+        readers: config.systemHealthReaders,
+        approvers: config.systemHealthApprovers ?? [],
+      });
+    }
   }
 }
 
