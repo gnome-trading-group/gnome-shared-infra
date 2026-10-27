@@ -15,6 +15,9 @@ export interface SharedInfraConfig {
   systemHealthReaders?: GnomeAccount[];
   // Accounts whose controller System page may approve or reject this account's pipeline approvals.
   systemHealthApprovers?: GnomeAccount[];
+
+  // Whose address block the account's platform network takes ('dev' or 'prod'); unset for an account with none.
+  platformNetwork?: string;
 }
 
 // The read-only role the controller's System page assumes to list deploy pipelines. gnome-controller refers to it by
@@ -55,6 +58,7 @@ export const CONFIGS: { [stage in Stage]?:  SharedInfraConfig } = {
 
     slackChannelConfigurationName: "gnome-alerts-dev",
     slackChannelId: "C08KX2GAUE4",
+    platformNetwork: "dev",
   },
   [Stage.STAGING]: {
     ...defaultConfig,
@@ -69,6 +73,7 @@ export const CONFIGS: { [stage in Stage]?:  SharedInfraConfig } = {
 
     slackChannelConfigurationName: "gnome-alerts-prod",
     slackChannelId: "C08KD27QZKN",
+    platformNetwork: "prod",
   },
 }
 

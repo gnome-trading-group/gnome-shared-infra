@@ -5,5 +5,5 @@ import { SharedInfraPipelineStack } from '../lib/shared-infra-pipeline-stack';
 
 const app = new cdk.App();
 new SharedInfraPipelineStack(app, 'SharedInfraPipelineStack', {
-  env: GnomeAccount.InfraPipelines,
+  env: GnomeAccount.InfraPipelines.environment,
 });

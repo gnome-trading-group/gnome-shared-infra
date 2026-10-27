@@ -2,11 +2,13 @@ import * as cdk from "aws-cdk-lib";
 import * as pipelines from "aws-cdk-lib/pipelines";
 import * as secrets from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from "constructs";
-import { Stage } from "@gnome-trading-group/gnome-shared-cdk";
+import { platformRegions, Stage } from "@gnome-trading-group/gnome-shared-cdk";
 import { CONFIGS, GITHUB_BRANCH, GITHUB_REPO, SharedInfraConfig } from "./config";
 import { MonitoringStack } from "./stacks/monitoring-stack";
 import { SystemHealthAccessStack } from "./stacks/system-health-access-stack";
 import { SlackStack } from "./stacks/slack-stack";
+import { PlatformNetworkStack } from "./stacks/platform-network-stack";
+import { PlatformPeeringStack } from "./stacks/platform-peering-stack";
 
 
 class AppStage extends cdk.Stage {
@@ -27,6 +29,29 @@ class AppStage extends cdk.Stage {
         approvers: config.systemHealthApprovers ?? [],
       });
     }
+    if (config.platformNetwork) {
+      addPlatformNetwork(this, config.account.accountId, config.platformNetwork);
+    }
+  }
+}
+
+/** A network per platform region, then the peering mesh, each region's peerings after those of the regions before it. */
+export function addPlatformNetwork(scope: Construct, account: string, stage: string) {
+  const networks: Record<string, PlatformNetworkStack> = {};
+  for (const region of platformRegions()) {
+    networks[region] = new PlatformNetworkStack(scope, `PlatformNetworkStack-${region}`, {
+      env: { account, region },
+      stage,
+    });
+  }
+  const peerings: PlatformPeeringStack[] = [];
+  for (const region of platformRegions()) {
+    peerings.push(new PlatformPeeringStack(scope, `PlatformPeeringStack-${region}`, {
+      env: { account, region },
+      stage,
+      networks,
+      earlier: [...peerings],
+    }));
   }
 }
 
