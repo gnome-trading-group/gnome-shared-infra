@@ -2,13 +2,14 @@ import * as cdk from "aws-cdk-lib";
 import * as pipelines from "aws-cdk-lib/pipelines";
 import * as secrets from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from "constructs";
-import { platformRegions, Stage } from "@gnome-trading-group/gnome-shared-cdk";
+import { platformRegions, SERVICE_ENDPOINTS, Stage } from "@gnome-trading-group/gnome-shared-cdk";
 import { CONFIGS, GITHUB_BRANCH, GITHUB_REPO, SharedInfraConfig } from "./config";
 import { MonitoringStack } from "./stacks/monitoring-stack";
 import { SystemHealthAccessStack } from "./stacks/system-health-access-stack";
 import { SlackStack } from "./stacks/slack-stack";
 import { PlatformNetworkStack } from "./stacks/platform-network-stack";
 import { PlatformPeeringStack } from "./stacks/platform-peering-stack";
+import { ServiceEndpointsStack } from "./stacks/service-endpoints-stack";
 
 
 class AppStage extends cdk.Stage {
@@ -31,6 +32,9 @@ class AppStage extends cdk.Stage {
     }
     if (config.platformNetwork) {
       addPlatformNetwork(this, config.account.accountId, config.platformNetwork);
+      new ServiceEndpointsStack(this, "ServiceEndpointsStack", {
+        env: { account: config.account.accountId, region: SERVICE_ENDPOINTS.region },
+      });
     }
   }
 }
