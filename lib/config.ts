@@ -26,6 +26,10 @@ export const SYSTEM_HEALTH_PIPELINES_ROLE = "gnome-system-health-pipelines-read"
 // The role the System page assumes to approve or reject a waiting pipeline approval; gnome-controller names it
 // SYSTEM_HEALTH_APPROVALS_ROLE in its cdk/lib/config.ts.
 export const SYSTEM_HEALTH_APPROVALS_ROLE = "gnome-system-health-pipelines-approve";
+// The controller's System page Lambda execution roles, the only principals these roles trust. gnome-controller fixes
+// them under these names (its cdk/lib/config.ts), so the two must match.
+export const SYSTEM_HEALTH_LAMBDA_ROLE = "gnome-system-health";
+export const SYSTEM_APPROVALS_LAMBDA_ROLE = "gnome-system-approvals";
 
 const defaultConfig = {
   slackWorkspaceId: "T08K71WNHSR",
