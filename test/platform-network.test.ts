@@ -47,11 +47,24 @@ describe('the platform network', () => {
     expect(resources(template, 'AWS::EC2::VPC').every(tagged)).toBe(true);
     expect(resources(template, 'AWS::EC2::Subnet').every(tagged)).toBe(true);
     expect(resources(template, 'AWS::EC2::SecurityGroup').every(tagged)).toBe(true);
+    expect(resources(template, 'AWS::EC2::PlacementGroup').every(tagged)).toBe(true);
+  });
+
+  it.each(REGIONS)('gives %s one precision-time placement group and publishes its name', (region) => {
+    const template = network(region);
+    template.resourceCountIs('AWS::EC2::PlacementGroup', 1);
+    template.hasResourceProperties('AWS::EC2::PlacementGroup', { Strategy: 'precision-time' });
+    const [groupId] = Object.keys(template.findResources('AWS::EC2::PlacementGroup'));
+    template.hasResourceProperties('AWS::SSM::Parameter', {
+      Name: '/gnome/platform-network/precision-time-placement-group',
+      Value: { Ref: groupId },
+    });
   });
 
   it('publishes the network for callers that find it at run time', () => {
     const names = resources(network('us-east-1'), 'AWS::SSM::Parameter').map((p) => p.Properties.Name).sort();
     expect(names).toEqual([
+      '/gnome/platform-network/precision-time-placement-group',
       '/gnome/platform-network/security-group-id',
       '/gnome/platform-network/subnet-ids',
       '/gnome/platform-network/vpc-id',

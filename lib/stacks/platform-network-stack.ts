@@ -21,6 +21,7 @@ export interface PlatformNetworkStackProps extends cdk.StackProps {
 export class PlatformNetworkStack extends cdk.Stack {
   public readonly vpc: ec2.Vpc;
   public readonly securityGroup: ec2.SecurityGroup;
+  public readonly precisionTimeGroup: ec2.CfnPlacementGroup;
 
   constructor(scope: Construct, id: string, props: PlatformNetworkStackProps) {
     super(scope, id, { ...props, crossRegionReferences: true });
@@ -46,8 +47,13 @@ export class PlatformNetworkStack extends cdk.Stack {
         ec2.Peer.ipv4(cidr), ec2.Port.udpRange(AERON_PORTS.from, AERON_PORTS.to), `Aeron from ${cidr}`);
     }
 
+    // Instances launched into it can discipline their clocks to the Nitro hardware clock (~µs from UTC), which is what
+    // makes latency measured across hosts trustworthy. Not a cluster: it packs nothing together, and costs nothing.
+    this.precisionTimeGroup = new ec2.CfnPlacementGroup(this, "PrecisionTimeGroup", { strategy: "precision-time" });
+
     cdk.Tags.of(this.vpc).add(PLATFORM_NETWORK_TAG.key, PLATFORM_NETWORK_TAG.value);
     cdk.Tags.of(this.securityGroup).add(PLATFORM_NETWORK_TAG.key, PLATFORM_NETWORK_TAG.value);
+    cdk.Tags.of(this.precisionTimeGroup).add(PLATFORM_NETWORK_TAG.key, PLATFORM_NETWORK_TAG.value);
 
     new ssm.StringParameter(this, "VpcIdParameter", {
       parameterName: PLATFORM_SSM.vpcId,
@@ -60,6 +66,10 @@ export class PlatformNetworkStack extends cdk.Stack {
     new ssm.StringParameter(this, "SecurityGroupIdParameter", {
       parameterName: PLATFORM_SSM.securityGroupId,
       stringValue: this.securityGroup.securityGroupId,
+    });
+    new ssm.StringParameter(this, "PrecisionTimeGroupParameter", {
+      parameterName: PLATFORM_SSM.precisionTimeGroup,
+      stringValue: this.precisionTimeGroup.ref,
     });
   }
 
